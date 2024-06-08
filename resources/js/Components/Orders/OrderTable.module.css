@@ -1,0 +1,6 @@
+.emptyLine {
+    @apply hidden;
+}
+table tbody > tr:first-child.emptyLine {
+    @apply table-row;
+}

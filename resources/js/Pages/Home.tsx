@@ -1,9 +1,11 @@
+import OrderForm from "@/Components/Orders/OrderForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { seedQuery } from "@/Helpers/api";
 import { PageProps } from "@/types";
 
-type Props = {};
-
 export default function Home({ auth }: PageProps) {
+    const {} = seedQuery();
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -14,14 +16,8 @@ export default function Home({ auth }: PageProps) {
                 </h2>
             }
         >
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            You're home!
-                        </div>
-                    </div>
-                </div>
+            <div className="flex flex-col w-full gap-6 py-6">
+                <OrderForm />
             </div>
         </AuthenticatedLayout>
     );
