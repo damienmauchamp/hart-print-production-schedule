@@ -42,7 +42,7 @@ class OrderController extends Controller {
 		return new OrderResource($order);
 	}
 
-	public function putOrder(Order $order, Request $request) {
+	public function edit(Order $order, Request $request) {
 
 		DB::beginTransaction();
 
@@ -104,7 +104,7 @@ class OrderController extends Controller {
 		return new OrderResource($order);
 	}
 
-	public function cleanUpOrders() {
+	public function clean() {
 
 		// deleting pending and incomplete orders
 		$orders = Order::where('status', 'pending')

@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderItemController extends Controller {
 
-	public function storeOrderItem(Request $request) {
+	public function store(Request $request) {
 
 		DB::beginTransaction();
 
@@ -97,7 +97,7 @@ class OrderItemController extends Controller {
 		], 200);
 	}
 
-	public function putOrderItem(Order $order, OrderItem $orderItem, Request $request) {
+	public function edit(Order $order, OrderItem $orderItem, Request $request) {
 
 		$request->validate([
 			'quantity' => 'required|integer|min:1',
@@ -122,7 +122,7 @@ class OrderItemController extends Controller {
 		], 200);
 	}
 
-	public function deleteOrderItem(Order $order, OrderItem $orderItem, Request $request) {
+	public function delete(Order $order, OrderItem $orderItem, Request $request) {
 
 		if (!$orderItem->delete()) {
 			return response()->json([

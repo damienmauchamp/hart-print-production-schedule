@@ -11,46 +11,52 @@ Route::get('/user', function (Request $request) {
 	return $request->user();
 })->middleware('auth:sanctum');
 
-// todo : authentification
-// Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group([], function () {
 
-// data
-Route::get('/seed', [DataController::class, 'seed'])->name('seed');
-Route::get('/products', [DataController::class, 'products'])->name('products');
+	// data & products
+	Route::get('/seed', [DataController::class, 'seed'])->name('seed');
+	Route::get('/products', [DataController::class, 'products'])->name('products');
 
-// orders
-Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
-Route::delete('/orders', [OrderController::class, 'cleanUpOrders'])->name('orders.clean');
+	// orders
+	Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
 
-Route::get('/order/{order:order_number}', [OrderController::class, 'index'])
-	->missing(function () {
-		return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
-	})
-	->name('order.get');
-Route::put('/order/{order:order_number}', [OrderController::class, 'putOrder'])->name('order.put')
-	->missing(function () {
-		return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
-	});
+	Route::get('/order/{order:order_number}', [OrderController::class, 'index'])
+		->missing(function () {
+			return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
+		})
+		->name('order.get');
 
-// order items
-// Route::get('/order/{order:order_number}/order-item/{order_item:id}', [DataController::class, 'getOrderItem'])->name('order.item.get');
+	Route::put('/order/{order:order_number}', [OrderController::class, 'edit'])
+		->missing(function () {
+			return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
+		})
+		->name('order.edit');
 
-Route::post('/order-item', [OrderItemController::class, 'storeOrderItem'])
-	->name('order.item.store');
+	Route::delete('/orders', [OrderController::class, 'clean'])->name('orders.clean');
 
-Route::put('/order/{order:order_number}/order-item/{orderItem:id}', [OrderItemController::class, 'putOrderItem'])
-	->missing(function () {
-		return response()->json(['message' => 'Order item not found'], 404);
-	})
-	->name('order.item.put');
+	// order items
+	// Route::get('/order/{order:order_number}/order-item/{orderItem:id}', [DataController::class, 'getOrderItem'])
+	// 	->missing(function () {
+	// 		return response()->json(['message' => 'Order item not found'], 404);
+	// 	})
+	// 	->name('order.item.get');
 
-Route::delete('/order/{order:order_number}/order-item/{orderItem:id}', [OrderItemController::class, 'deleteOrderItem'])
-	->missing(function () {
-		return response()->json(['message' => 'Order item not found'], 404);
-	})
-	->name('order.item.delete');
+	Route::post('/order-item', [OrderItemController::class, 'store'])
+		->name('order.item.store');
 
-// schedule
-Route::get('/schedule', [ProductionScheduleController::class, 'schedule'])->name('schedule');
+	Route::put('/order/{order:order_number}/order-item/{orderItem:id}', [OrderItemController::class, 'edit'])
+		->missing(function () {
+			return response()->json(['message' => 'Order item not found'], 404);
+		})
+		->name('order.item.edit');
 
-// });
+	Route::delete('/order/{order:order_number}/order-item/{orderItem:id}', [OrderItemController::class, 'delete'])
+		->missing(function () {
+			return response()->json(['message' => 'Order item not found'], 404);
+		})
+		->name('order.item.delete');
+
+	// schedule
+	Route::get('/schedule', [ProductionScheduleController::class, 'schedule'])->name('schedule');
+
+})->middleware('auth:sanctum');

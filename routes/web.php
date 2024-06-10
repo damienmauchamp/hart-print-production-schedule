@@ -15,12 +15,13 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
+
+	// homepage
 	Route::get('/home', function () {
 		return Inertia::render('Home');
 	})->name('home');
 
 });
-// Route::post('/order-item', [DataController::class, 'addProductItem'])->name('order.item.store');
 
 Route::middleware('auth')->group(function () {
 	Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

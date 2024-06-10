@@ -246,7 +246,7 @@ export default function OrderForm({
         // isFetched: isFetchedOrder,
     } = getOrder(orderNumber, {
         onSuccess: (res) => {
-            console.log("res", res);
+            // console.log("res", res);
         },
         onError: (err: OrderError) => {
             if (err.response.data.code === "NOT_FOUND") {

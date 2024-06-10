@@ -38,7 +38,7 @@ class Order extends Model {
 
 		static::creating(function ($model) {
 			// generate order number
-			$model->order_number = 'ORD' . date('ymdHi') . Str::random(4);
+			$model->order_number = 'ORD' . date('ymdHi') . mb_strtoupper(Str::random(4));
 		});
 
 		static::deleting(function ($model) {

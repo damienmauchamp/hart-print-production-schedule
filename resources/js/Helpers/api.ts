@@ -111,7 +111,7 @@ export const editOrderFn = (
     need_by_date: string,
     done: boolean = false
 ) =>
-    axiosClient.put(route("order.put", orderNumber), {
+    axiosClient.put(route("order.edit", orderNumber), {
         customer: customer,
         orderNumber: orderNumber,
         need_by_date: need_by_date,
@@ -124,7 +124,7 @@ export const editOrderItemFn = (
     quantity: number
 ) =>
     axiosClient.put(
-        route("order.item.put", {
+        route("order.item.edit", {
             order: orderNumber,
             orderItem: itemId,
         }),
