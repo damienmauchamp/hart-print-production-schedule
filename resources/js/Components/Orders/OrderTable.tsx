@@ -168,9 +168,9 @@ export function OrderItemLine({
         mutationFn: (params: { orderNumber: string; itemId: number }) =>
             deleteOrderItemFn(params.orderNumber, params.itemId),
         onSuccess: (res) => {
-            const message = res.data.message;
+            // const message = res.data.message;
             setDeleted(true);
-            console.log("OK message:", message);
+            refetchOrder();
         },
         onError: (err: AxiosErrorResponse) => {
             alert(err?.response?.data?.message);
@@ -178,7 +178,7 @@ export function OrderItemLine({
     });
 
     const deleteItem = () =>
-        confirm("Are you sure?") &&
+        confirm("Are you sure you want to remove this item?") &&
         deleteOrderItemMutation.mutate({
             orderNumber: orderNumber,
             itemId: item.id,

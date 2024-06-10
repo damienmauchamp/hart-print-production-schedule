@@ -245,8 +245,13 @@ export default function OrderForm({
         isLoading: isLoadingOrder,
         // isFetched: isFetchedOrder,
     } = getOrder(orderNumber, {
-        onSuccess: (res) => {
-            // console.log("res", res);
+        onSuccess: (data) => {
+            // Updating the product type
+            if (!data.items.length) {
+                setProductType(null);
+            } else {
+                setProductType(Number(data.items[0].product.type_id));
+            }
         },
         onError: (err: OrderError) => {
             if (err.response.data.code === "NOT_FOUND") {
