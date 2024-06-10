@@ -3,6 +3,7 @@
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\ProductionScheduleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,11 +20,16 @@ Route::get('/products', [DataController::class, 'products'])->name('products');
 
 // orders
 Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
+Route::delete('/orders', [OrderController::class, 'cleanUpOrders'])->name('orders.clean');
 
-Route::get('/order/{order:order_number}', [OrderController::class, 'index'])->name('order.get');
+Route::get('/order/{order:order_number}', [OrderController::class, 'index'])
+	->missing(function () {
+		return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
+	})
+	->name('order.get');
 Route::put('/order/{order:order_number}', [OrderController::class, 'putOrder'])->name('order.put')
 	->missing(function () {
-		return response()->json(['message' => 'Order not found'], 404);
+		return response()->json(['message' => 'Order not found', 'code' => 'NOT_FOUND'], 404);
 	});
 
 // order items
@@ -43,5 +49,8 @@ Route::delete('/order/{order:order_number}/order-item/{orderItem:id}', [OrderIte
 		return response()->json(['message' => 'Order item not found'], 404);
 	})
 	->name('order.item.delete');
+
+// schedule
+Route::get('/schedule', [ProductionScheduleController::class, 'schedule'])->name('schedule');
 
 // });

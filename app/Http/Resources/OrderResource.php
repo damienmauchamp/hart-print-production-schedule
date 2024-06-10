@@ -19,7 +19,7 @@ class OrderResource extends JsonResource {
 			'customer_name' => $this->customer_name,
 			'need_by_date' => $this->need_by_date,
 			'status' => $this->status,
-			// 'created_at' => $this->created_at,
+			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
 		];
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DBHelper;
 use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -12,8 +13,29 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderController extends Controller {
 
-	public function list() {
-		return new OrderCollection(Order::all());
+	public function list(Request $request) {
+
+		$request->validate([
+			'customer' => 'string',
+			'status' => 'in:pending,confirmed',
+			'order_by' => 'in:customer,-customer,need_by_date,-need_by_date,created_at,-created_at,updated_at,-updated_at',
+		]);
+
+		$orders = Order::where(function ($query) use ($request) {
+
+			$status = $request->status ?? '';
+			if ($status) {
+				$query->where('status', $status);
+			}
+
+			if ($request->customer) {
+				$query->where('customer_name', 'like', "%$request->customer%");
+			}
+		})
+			->orderBy(...DBHelper::orderBy($request->order_by ?? '-updated_at'))
+			->get();
+
+		return new OrderCollection($orders);
 	}
 
 	public function index(Order $order) {
@@ -37,7 +59,7 @@ class OrderController extends Controller {
 			}
 
 			if (!$request->need_by_date) {
-				throw new HttpException(400, 'Customer name is required');
+				throw new HttpException(400, 'Need by date is required');
 			}
 
 			// todo : check if date is in the future
@@ -80,5 +102,23 @@ class OrderController extends Controller {
 		DB::commit();
 
 		return new OrderResource($order);
+	}
+
+	public function cleanUpOrders() {
+
+		// deleting pending and incomplete orders
+		$orders = Order::where('status', 'pending')
+			->where('updated_at', '<', now()->subMinutes(30))
+			->get();
+		foreach ($orders as $order) {
+			$order->delete();
+		}
+
+		// deleting empty orders
+		Order::whereDoesntHave('orderItems')
+			->where('updated_at', '<', now()->subMinutes(30))
+			->delete();
+
+		return response()->json(['message' => 'Orders cleaned up'], 200);
 	}
 }

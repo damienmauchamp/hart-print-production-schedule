@@ -10,7 +10,6 @@ use App\Models\Product;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderItemController extends Controller {
@@ -44,10 +43,9 @@ class OrderItemController extends Controller {
 
 			} else {
 				$order = Order::create([
-					'order_number' => date('ymdHi') . mb_strtoupper(Str::random(4)), // todo : à voir
 					'customer_name' => '',
 					'status' => 'pending',
-					'need_by_date' => '9999-12-31 23:59:59', // todo : à voir
+					'need_by_date' => null,
 				]);
 			}
 
