@@ -8,6 +8,7 @@ import {
     HTMLAttributes,
     PropsWithChildren,
     TdHTMLAttributes,
+    ThHTMLAttributes,
     useEffect,
     useState,
 } from "react";
@@ -15,6 +16,8 @@ import { FaSyncAlt } from "react-icons/fa";
 import SecondaryButton from "../SecondaryButton";
 import { useMutation } from "react-query";
 import styles from "./OrderTable.module.css";
+import Table, { TableRow, TableCell, TableHead, TableHeadCell } from "../Table";
+import ButtonFetch from "../ButtonFetch";
 
 type Props = {
     order?: Order;
@@ -22,55 +25,6 @@ type Props = {
     isLoading?: boolean;
     refetch?: () => void;
 };
-
-// const TableRow = ({ children }: PropsWithChildren) => (
-export const TableRow = ({
-    children,
-    className,
-    ...props
-}: HTMLAttributes<HTMLTableRowElement>) => (
-    <tr
-        className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${className}`}
-    >
-        {children}
-    </tr>
-);
-
-export const TableCell = (
-    {
-        children,
-        className,
-        bold = false,
-        ...props
-    }: TdHTMLAttributes<HTMLTableCellElement> & { bold?: boolean } // px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white
-) => (
-    <td
-        className={`px-6 py-4 ${
-            bold ? "font-semibold text-gray-900 dark:text-white" : ""
-        } ${className}`}
-        {...props}
-    >
-        {children}
-    </td>
-);
-export const TableHeadRow = ({ children }: PropsWithChildren) => (
-    <th scope="col" className="px-6 py-3">
-        {children}
-    </th>
-);
-
-export const TableHead = ({ children }: PropsWithChildren) => (
-    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        {children}
-    </thead>
-);
-export const Table = ({ children }: PropsWithChildren) => (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            {children}
-        </table>
-    </div>
-);
 
 const QuantityButton = ({
     itemId,
@@ -88,21 +42,11 @@ const QuantityButton = ({
     quantityValue: number;
     setQuantityValue: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-    //
-    // const [quantityValue, setQuantityValue] = useState<number>(quantity);
-
-    //
-
     const increment = () => {
         setQuantityValue(quantityValue + 1);
-        console.log("INCREMENT:", itemId, productId, quantity, orderNumber);
-        // fetch(`/api/order/${orderNumber}/item/${productId}/increment`, {
-        // 	method: "POST",
-        // });
     };
     const decrement = () => {
         setQuantityValue(quantityValue <= 0 ? 0 : quantityValue - 1);
-        console.log("DECREMENT:", itemId, productId, quantity, orderNumber);
     };
 
     return (
@@ -301,21 +245,22 @@ export default function OrderTable({
                     <div>Updated : {order.updated_at}</div>
                 </div>
 
-                <SecondaryButton onClick={() => refetch()} className="">
-                    <span>UPDATE</span>
-                    <FaSyncAlt
-                        className={`ml-2 ${isFetching ? "icon-spin" : ""}`}
-                    />
-                </SecondaryButton>
+                <ButtonFetch
+                    refetch={refetch}
+                    isFetching={isFetching}
+                    isLoading={isLoading}
+                >
+                    Update
+                </ButtonFetch>
             </div>
             <Table>
                 <TableHead>
                     <tr>
-                        <TableHeadRow>Product Name</TableHeadRow>
-                        <TableHeadRow>Type</TableHeadRow>
-                        <TableHeadRow>Quantity</TableHeadRow>
-                        <TableHeadRow></TableHeadRow>
-                        <TableHeadRow></TableHeadRow>
+                        <TableHeadCell>Product Name</TableHeadCell>
+                        <TableHeadCell>Type</TableHeadCell>
+                        <TableHeadCell>Quantity</TableHeadCell>
+                        <TableHeadCell></TableHeadCell>
+                        <TableHeadCell></TableHeadCell>
                     </tr>
                 </TableHead>
                 <tbody>
@@ -330,7 +275,7 @@ export default function OrderTable({
 
                     <TableRow key={"empty"} className={styles.emptyLine}>
                         <TableCell
-                            colSpan={5}
+                            colSpan={6}
                             className="text-center font-normal italic"
                         >
                             No items yet.

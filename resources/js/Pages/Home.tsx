@@ -1,10 +1,27 @@
 import OrderForm from "@/Components/Orders/OrderForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { seedQuery } from "@/Helpers/api";
+import { getOrders, getProductionSchedule, seedQuery } from "@/Helpers/api";
 import { PageProps } from "@/types";
+import OrdersSection from "@/Components/Orders/OrdersSection";
+import ProductionSchedule from "@/Components/ProductionSchedule/ProductionSchedule";
 
 export default function Home({ auth }: PageProps) {
     const {} = seedQuery();
+
+    const {
+        data: orders,
+        refetch: refetchOrders,
+        isFetching: isFetchingOrders,
+        isLoading: isLoadingOrders,
+        isFetched: isFetchedOrders,
+    } = getOrders();
+
+    const {
+        data: schedule,
+        refetch: refetchProductionSchedule,
+        isFetching: isFetchingProductionSchedule,
+        isLoading: isLoadingProductionSchedule,
+    } = getProductionSchedule();
 
     return (
         <AuthenticatedLayout
@@ -17,7 +34,25 @@ export default function Home({ auth }: PageProps) {
             }
         >
             <div className="flex flex-col w-full gap-6 py-6">
-                <OrderForm />
+                <OrderForm
+                    refetchOrders={refetchOrders}
+                    refetchProductionSchedule={refetchProductionSchedule}
+                />
+
+                <OrdersSection
+                    orders={orders}
+                    refetch={refetchOrders}
+                    isFetching={isFetchingOrders}
+                    isLoading={isLoadingOrders}
+                />
+
+                <ProductionSchedule
+                    startDate={(schedule && schedule[0]?.start_time) || ""}
+                    schedule={schedule}
+                    refetch={refetchProductionSchedule}
+                    isFetching={isFetchingProductionSchedule}
+                    isLoading={isLoadingProductionSchedule}
+                />
             </div>
         </AuthenticatedLayout>
     );

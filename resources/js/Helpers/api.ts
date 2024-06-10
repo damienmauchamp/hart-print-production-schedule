@@ -1,4 +1,10 @@
-import { Order, Product } from "@/types";
+import {
+    Order,
+    Product,
+    Schedule,
+    ScheduleItem,
+    ScheduleProductItem,
+} from "@/types";
 import axios from "axios";
 import { useQuery, UseQueryOptions } from "react-query";
 
@@ -26,11 +32,20 @@ export const getProducts = (options?: UseQueryOptions<Product[], Error>) =>
         // await axiosClient.get("/products").then((res) => res.data.data),
         options
     );
+
+export type OrderError = Error & {
+    response: {
+        data: { message: string; code?: string };
+        status: number;
+        statusText: string;
+    };
+};
+
 export const getOrder = (
     orderNumber: string,
-    options?: UseQueryOptions<Order, Error>
+    options?: UseQueryOptions<Order, OrderError>
 ) =>
-    useQuery<Order, Error>(
+    useQuery<Order, OrderError>(
         ["order", orderNumber],
         async () => {
             return (
@@ -47,11 +62,27 @@ export const getOrders = (options?: UseQueryOptions<Order[], Error>) =>
         "orders",
         async () => {
             return await axiosClient
-                .get(route("orders.list"))
+                .get(route("orders.list"), { params: { status: "confirmed" } })
                 .then((res) => res.data.data);
         },
         options
     );
+export const getProductionSchedule = (
+    options?: UseQueryOptions<Schedule, Error>
+) =>
+    useQuery<Schedule, Error>(
+        "schedule",
+        async () => {
+            return await axiosClient
+                .get(route("schedule"), { params: {} })
+                .then((res) => res.data);
+        },
+        options
+    );
+
+export const isScheduleProductItem = (
+    scheduleItem: ScheduleItem
+): scheduleItem is ScheduleProductItem => scheduleItem.type === "schedule";
 
 //
 

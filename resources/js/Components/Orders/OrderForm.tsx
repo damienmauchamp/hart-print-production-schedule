@@ -7,6 +7,7 @@ import TextInput from "../TextInput";
 import Select from "../Select";
 import {
     AxiosErrorResponse,
+    OrderError,
     addOrderItemFn,
     editOrderFn,
     getOrder,
@@ -15,22 +16,30 @@ import {
 } from "@/Helpers/api";
 import { useMutation, useQuery } from "react-query";
 import Section from "../Section";
-import OrderTable, {
-    Table,
-    TableCell,
+import OrderTable from "./OrderTable";
+import Table, {
     TableHead,
-    TableHeadRow,
+    TableHeadCell,
     TableRow,
-} from "./OrderTable";
+    TableCell,
+    TableDate,
+} from "../Table";
+import OrdersSection from "./OrdersSection";
+import { FaPlus } from "react-icons/fa6";
 
 type Props = {};
 
 // const addOrderItemMutation = addOrderItem();
 
-export default function OrderForm({}: Props) {
+export default function OrderForm({
+    refetchOrders,
+    refetchProductionSchedule,
+}: {
+    refetchOrders: () => void;
+    refetchProductionSchedule: () => void;
+}) {
     // region form
 
-    // todo : needByDateMin (api call)
     const [needByDateMin, setNeedByDateMin] = useState(
         new Date().toISOString().split("T")[0]
     );
@@ -55,7 +64,6 @@ export default function OrderForm({}: Props) {
             if (message) alert(message);
 
             if (orderStatus === "confirmed") {
-                console.log("ORDER CONFIRMED - RESET");
                 // Reset forms
                 setProductType(null);
                 reset();
@@ -88,8 +96,6 @@ export default function OrderForm({}: Props) {
 
     const submit: FormEventHandler = (e: FormEvent) => {
         e.preventDefault();
-
-        console.log(orderNumber);
 
         //
         const form = e.target as HTMLFormElement;
@@ -154,11 +160,8 @@ export default function OrderForm({}: Props) {
 
             setProductType(productType);
             setOrderNumber(orderNumber);
-
-            console.log("onSuccess", message, productType, orderNumber);
         },
         onError: (err: AxiosErrorResponse) => {
-            console.log("onError", err, err?.response?.data?.message);
             alert(err?.response?.data?.message);
         },
         onSettled: () => {
@@ -172,6 +175,7 @@ export default function OrderForm({}: Props) {
     useEffect(() => {
         refetchOrder();
         refetchOrders();
+        refetchProductionSchedule();
     }, [orderNumber]);
 
     const {
@@ -239,28 +243,21 @@ export default function OrderForm({}: Props) {
         refetch: refetchOrder,
         isFetching: isFetchingOrder,
         isLoading: isLoadingOrder,
-        isFetched: isFetchedOrder,
-    } = getOrder(orderNumber);
+        // isFetched: isFetchedOrder,
+    } = getOrder(orderNumber, {
+        onSuccess: (res) => {
+            console.log("res", res);
+        },
+        onError: (err: OrderError) => {
+            if (err.response.data.code === "NOT_FOUND") {
+                alert(
+                    "We could not find this order. It may have been deleted due to inactivity. This page will be reloaded."
+                );
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        },
+    });
     // endregion order
-
-    // region orders list
-    const {
-        data: orders,
-        refetch: refetchOrders,
-        isFetching: isFetchingOrders,
-        isLoading: isLoadingOrders,
-        isFetched: isFetchedOrders,
-    } = getOrders();
-    // endregion orders list
-
-    // region debug
-    // useEffect(() => {
-    //     console.log("products:", products);
-    // }, [products]);
-    // useEffect(() => {
-    //     console.log("new productType:", productType);
-    // }, [productType]);
-    // endregion debug
 
     return (
         <>
@@ -337,12 +334,13 @@ export default function OrderForm({}: Props) {
                         </div>
 
                         {/* add product */}
-                        <div className="flex items-end justify-center mt-4">
+                        <div className="flex items-end justify-center">
                             <PrimaryButton
                                 className="py-3"
                                 disabled={productFormProcessing}
+                                title="Add product"
                             >
-                                Add Product
+                                <FaPlus />
                             </PrimaryButton>
                         </div>
                     </div>
@@ -438,31 +436,6 @@ export default function OrderForm({}: Props) {
                     />
                 </Section>
             )}
-
-            <Section title="Orders">
-                <Table>
-                    <TableHead>
-                        <tr>
-                            <TableHeadRow>Order Number</TableHeadRow>
-                            <TableHeadRow>Customer</TableHeadRow>
-                            <TableHeadRow>Status</TableHeadRow>
-                            <TableHeadRow>Need by date</TableHeadRow>
-                            <TableHeadRow>Updated at</TableHeadRow>
-                        </tr>
-                    </TableHead>
-                    <tbody>
-                        {orders?.map((o) => (
-                            <TableRow key={o.id}>
-                                <TableCell bold>{o.order_number}</TableCell>
-                                <TableCell>{o.customer_name}</TableCell>
-                                <TableCell>{o.status}</TableCell>
-                                <TableCell>{o.need_by_date}</TableCell>
-                                <TableCell>{o.updated_at}</TableCell>
-                            </TableRow>
-                        ))}
-                    </tbody>
-                </Table>
-            </Section>
         </>
     );
 }
