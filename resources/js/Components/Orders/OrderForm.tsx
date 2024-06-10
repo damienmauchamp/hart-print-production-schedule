@@ -11,25 +11,12 @@ import {
     addOrderItemFn,
     editOrderFn,
     getOrder,
-    getOrders,
     getProducts,
 } from "@/Helpers/api";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import Section from "../Section";
 import OrderTable from "./OrderTable";
-import Table, {
-    TableHead,
-    TableHeadCell,
-    TableRow,
-    TableCell,
-    TableDate,
-} from "../Table";
-import OrdersSection from "./OrdersSection";
 import { FaPlus } from "react-icons/fa6";
-
-type Props = {};
-
-// const addOrderItemMutation = addOrderItem();
 
 export default function OrderForm({
     refetchOrders,
@@ -39,7 +26,6 @@ export default function OrderForm({
     refetchProductionSchedule: () => void;
 }) {
     // region form
-
     const [needByDateMin, setNeedByDateMin] = useState(
         new Date().toISOString().split("T")[0]
     );
@@ -224,17 +210,10 @@ export default function OrderForm({
             quantity: quantity,
         });
     };
-
     // endregion product form
 
     // region products
-    const {
-        data: products,
-        // refetch: refetchProducts,
-        // isFetching: isFetchingProducts,
-        // isLoading: isLoadingProducts,
-        // isFetched: isFetchedProducts,
-    } = getProducts();
+    const { data: products } = getProducts();
     // endregion products
 
     // region order
@@ -243,7 +222,6 @@ export default function OrderForm({
         refetch: refetchOrder,
         isFetching: isFetchingOrder,
         isLoading: isLoadingOrder,
-        // isFetched: isFetchedOrder,
     } = getOrder(orderNumber, {
         onSuccess: (data) => {
             // Updating the product type

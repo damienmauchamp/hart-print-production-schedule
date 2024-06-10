@@ -4,16 +4,7 @@ import {
     editOrderItemFn,
 } from "@/Helpers/api";
 import { Order, OrderItem } from "@/types";
-import {
-    HTMLAttributes,
-    PropsWithChildren,
-    TdHTMLAttributes,
-    ThHTMLAttributes,
-    useEffect,
-    useState,
-} from "react";
-import { FaSyncAlt } from "react-icons/fa";
-import SecondaryButton from "../SecondaryButton";
+import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import styles from "./OrderTable.module.css";
 import Table, { TableRow, TableCell, TableHead, TableHeadCell } from "../Table";
