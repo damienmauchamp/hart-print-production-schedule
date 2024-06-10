@@ -16,12 +16,6 @@ export const axiosClient = axios.create({
     },
 });
 
-export const seedQuery = () =>
-    useQuery(
-        "seed", // route("seed")
-        async () => await axiosClient.get(route("seed")).then((res) => res.data)
-        // async () => await axiosClient.get("/seed").then((res) => res.data)
-    );
 export const getProducts = (options?: UseQueryOptions<Product[], Error>) =>
     useQuery<Product[], Error>(
         "products",

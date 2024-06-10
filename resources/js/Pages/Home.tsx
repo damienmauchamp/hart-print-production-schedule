@@ -1,13 +1,11 @@
 import OrderForm from "@/Components/Orders/OrderForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { getOrders, getProductionSchedule, seedQuery } from "@/Helpers/api";
+import { getOrders, getProductionSchedule } from "@/Helpers/api";
 import { PageProps } from "@/types";
 import OrdersSection from "@/Components/Orders/OrdersSection";
 import ProductionSchedule from "@/Components/ProductionSchedule/ProductionSchedule";
 
 export default function Home({ auth }: PageProps) {
-    const {} = seedQuery();
-
     const {
         data: orders,
         refetch: refetchOrders,

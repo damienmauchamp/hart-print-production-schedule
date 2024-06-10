@@ -225,7 +225,7 @@ export default function OrderForm({
     } = getOrder(orderNumber, {
         onSuccess: (data) => {
             // Updating the product type
-            if (!data.items.length) {
+            if (!data?.items?.length) {
                 setProductType(null);
             } else {
                 setProductType(Number(data.items[0].product.type_id));
